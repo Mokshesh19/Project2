@@ -1,93 +1,33 @@
-COLUMNS:
-	CORPORATE_ IDENTIFICATION_NUMBER - 
-		Corporate Identification Number sometimes referred to as CIN is a unique 
-		identification number which is assigned by the ROC (Registrar of Companies) of various states under the MCA (Ministry of Corporate Affairs).
+Q.1 Total number of companies in each state.
 
-	COMPANY_NAME - 
-		Name of the company.
-
-	COMPANY_STATUS - 
-		The 'Status' tell the current state of the company. Whether it is active and operating or 
-		dormant or it has been struck off and closed. There are 13 such status that a company could be carrying.
-
-		ACTV - Active
-		NAEF - Not available for e-filing
-		ULQD - Under liquidation
-		AMAL - Amalgamated
-		STOF - Strike off
-		DISD - Dissolved
-		CLLD - Converted to LLP and Dissolved
-		UPSO - Under process of Striking Off
-		CLLP - Converted to LLP
-		LIQD - Liquidated
-		DRMT - Dormant
-		MLIQ - Vanished
-		D455 - Dormant under section 455
-
-	COMPANY_CLASS - 
-		Companies are primarily classified into private and public. Private companies or private
-		 limited companies are those companies that are closely-held and have less than 200 shareholders. Public 
-		 companies are limited companies that have more than 200 shareholders and are listed on a stock exchange.
-
-		Public
-		Private
-		Private (One Person Company)
-		
-	COMPANY_CATEGORY - 
-		The category of the company.
-
-		Company limited by Shares
-		Company Limited by Guarantee
-		Unlimited Company
-		
-	COMPANY_SUB _CATEGORY - 
-		The sub-category of the company.
-
-		Non-govt company
-		State Govt company
-		Subsidiary of Foreign Company
-		Guarantee and Association comp
-		Union Govt company
-		
-	DATEOF REGISTRATION - Date of registration of the company.
-
-	REGISTERED_STATE - State in which company was registered.
-
-	AUTHORIZED_CAP - Authorized Capital of the company (INR)
-
-	PAIDUP_CAPITAL - Paid Up Capital of the company (INR).
-
-	INDUSTRIAL_CLASS - Industrial class of the company as per NIC 2004.
-
-	PRINCIPAL_ BUSINESS_ACTIVITY AS PER_CIN - Principal Business Activity of the company as per CIN.
-
-	REGISTERED_OFFICE _ADDRESS - Registered office address of the company.
-
-	REGISTRAR_OF _COMPANIES - Registrar office of the company.
-
-	EMAIL_ADDR - Email address of the companies owner/director.
-
-	LATEST_YEAR _ANNUAL _RETURN - Annual return of the last year.
-
-	LATEST_YEAR _FINANCIAL _STATEMENT - Financial Statement of the last year.
-
-
-
-Q.1 Total number of companies in each state. 
 Q.2 Total number of companies of each status.
+
 Q.3 Total number of companies in each company class.
+
 Q.4 Total number of companies in each of Principal Business Activities
+
 Q.5 Total number of companies registered every year.
+
 Q.6 Details of duplicate company names.
+
 Q.7 Which are Top 50 oldest companies?
+
 Q.8 List all the companies registered between 1990-2020
+
 Q.9 List all the private companies which are active in Delhi or Karnataka and has authorized capital greater than 30,00,000 INR
+
 Q.10 List all the public companies which are under liquidation or liquidated in India and belong to State-govt or Union Govt registered after 1985
+
 Q.11 List the names of the company and company class which are neither active in Maharashtra nor Delhi.
+
 Q.12 Find the difference between the average annual return of the companies that are registered between 1990-2000 and 2001-2010.
+
 Q.13 List 50 recently registered companies. 
+
 Q.14 List the private(one person company) companies and email address of its owner registered in Mumbai or Delhi ROC.
+
 Q.15 List all the companies whose authorised and paidup capital is zero
+
 Q.16 List all the private (one person company) companies whose paid up capital is greater than 10,00,000 INR
 
  
