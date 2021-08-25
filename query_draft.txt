@@ -1,10 +1,10 @@
-Q.1 Total number of companies in each state.
+Q.1 Total number of companies in each state. 
 
 Q.2 Total number of companies of each status.
 
 Q.3 Total number of companies in each company class.
 
-Q.4 Total number of companies in each of Principal Business Activities
+Q.4 Total number of companies in each of Principal Business Activities.
 
 Q.5 Total number of companies registered every year.
 
@@ -12,23 +12,32 @@ Q.6 Details of duplicate company names.
 
 Q.7 Which are Top 50 oldest companies?
 
-Q.8 List all the companies registered between 1990-2020
+Q.8 List all the companies registered between 1990-2020.
 
-Q.9 List all the private companies which are active in Delhi or Karnataka and has authorized capital greater than 30,00,000 INR
+Q.9 List all the private companies which are active in Delhi or Karnataka and has authorized capital greater than 3,00,00,000 INR.
 
 Q.10 List all the public companies which are under liquidation or liquidated in India and belong to State-govt or Union Govt registered after 1985
 
 Q.11 List the names of the company and company class which are neither active in Maharashtra nor Delhi.
 
-Q.12 Find the difference between the average annual return of the companies that are registered between 1990-2000 and 2001-2010.
+Q.12 List all the private companies which were registered in Mumbai Registrar office and are vanished.
 
 Q.13 List 50 recently registered companies. 
 
 Q.14 List the private(one person company) companies and email address of its owner registered in Mumbai or Delhi ROC.
 
-Q.15 List all the companies whose authorised and paidup capital is zero
+Q.15 List all the companies whose paidup capital is greater than authorized capital.
 
-Q.16 List all the private (one person company) companies whose paid up capital is greater than 10,00,000 INR
+Q.16 List all the private (one person company) companies whose paid up capital is greater than 1,00,00,000 INR.
+
+Q.17 List the state-govt companies belonging to Gujarat and Karnataka .
+
+Q.18 List the oil companies which are private .
+
+Q.19 List all private(One person company) companies which are Dormant under section 455.
+
+Q.20 List the companies from Tamil Nadu , West Bengal, Delhi which are Subsidiaries of Foreign Company.
+
 
  
 
