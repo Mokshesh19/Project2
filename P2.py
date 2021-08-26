@@ -45,24 +45,25 @@ df3.select(when(df3.COMPANY_STATUS=="ACTV","Active") \
 ).show()
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #4
-print("RESULT OF QUERY NO.4 ----> ")
+print("#4 Number of companies in each of principal business activity ----> ")
+
 df.groupBy("PRINCIPAL_BUSINESS_ACTIVITY_AS_PER_CIN") \
     .agg(count("CORPORATE_IDENTIFICATION_NUMBER").alias("Number_of_Companies")) \
     .show(truncate=False)
-
-
-spark.sql("Select PRINCIPAL_BUSINESS_ACTIVITY_AS_PER_CIN , count(CORPORATE_IDENTIFICATION_NUMBER) \
-as Number_of_Companies from companies group by PRINCIPAL_BUSINESS_ACTIVITY_AS_PER_CIN").show(truncate =False)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #6
 print("6.Details of duplicate company names..")
 spark.sql("Select COMPANY_NAME,num from(select COMPANY_NAME,count(COMPANY_NAME) as num from companies group by COMPANY_NAME) as statistic where num >1 sort by num desc").show(truncate=False)
+
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #8
-print("RESULT OF QUERY NO.8 ----> ")
-spark.sql("Select COMPANY_NAME, DATE_OF_REGISTRATION from companies where \
-    DATE_OF_REGISTRATION >= '1990-01-01' and  DATE_OF_REGISTRATION <= '2020-12-31' Order by DATE_OF_REGISTRATION ").show()
+print("#8 List of companies registered between 1990-2020 in Arunchal Pradesh,Lakshadweep,Mizoram,Nagaland ----> ")
+
+df.select("COMPANY_NAME", "COMPANY_STATUS", "DATE_OF_REGISTRATION","REGISTERED_STATE" )\
+    .filter((df.DATE_OF_REGISTRATION >= '1990-01-01') & (df.DATE_OF_REGISTRATION <= '2020-12-31')\
+         & (df.REGISTERED_STATE.isin('Lakshadweep','Mizoram','Arunachal Pradesh', 'Nagaland')))\
+    .show(1500)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #10
@@ -70,18 +71,21 @@ print("10.List all the public companies which are under liquidation or liquidate
 spark.sql("Select COMPANY_NAME,COMPANY_CLASS from companies where COMPANY_STATUS in ('ULQD','LIQD') and COMPANY_CLASS like 'Public' and DATE_OF_REGISTRATION >= '1985-12-31'").show(truncate =False)
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #12
-print("RESULT OF QUERY NO.12 ----> ")
-spark.sql("Select COMPANY_NAME,COMPANY_CLASS,COMPANY_STATUS, \
-    DATE_OF_REGISTRATION,REGISTERED_STATE,REGISTRAR_OF_COMPANIES  from companies where COMPANY_STATUS = 'MLIQ' ").show()
+print("#12 List of companies which are vanished ----->")
+
+df.select('COMPANY_NAME','COMPANY_CLASS','COMPANY_STATUS', 'DATE_OF_REGISTRATION','REGISTERED_STATE','REGISTRAR_OF_COMPANIES')\
+    .filter(df.COMPANY_STATUS == 'MLIQ').show()
+
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #14
 print("14.List the private(one person company) companies and email address of its owner registered in Mumbai or Delhi ROC.")
 spark.sql("Select COMPANY_NAME,COMPANY_CLASS, EMAIL_ADDR from companies where COMPANY_CLASS like 'Private(One Person Company)' and REGISTERED_STATE in ('Maharastra','Delhi')").show(truncate =False)
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #16
-print("RESULT OF QUERY NO.16 ----> ")
-spark.sql("Select COMPANY_NAME, COMPANY_CLASS,AUTHORIZED_CAP, PAIDUP_CAPITAL from \
-    companies where COMPANY_CLASS = 'Private(One Person Company)' and PAIDUP_CAPITAL > 10000000 limit 100 ").show(truncate = False) 
+print("#16 List of Private(One Person Company) whose paidup capital is greater than 1 CR ----> ")
+
+df.select('COMPANY_NAME', 'COMPANY_CLASS','AUTHORIZED_CAP', 'PAIDUP_CAPITAL')\
+    .filter((df.COMPANY_CLASS == 'Private(One Person Company)') & (df.PAIDUP_CAPITAL > 10000000)).show()
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #18
@@ -89,10 +93,11 @@ print("18.List the oil companies which are private .")
 spark.sql("Select COMPANY_NAME,COMPANY_CLASS from companies where COMPANY_NAME like '%OIL%' and COMPANY_CLASS like 'Private%'").show(truncate =False)
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #20
-print("RESULT OF QUERY NO.20 ----> ")
-spark.sql("Select COMPANY_NAME,COMPANY_CLASS, COMPANY_SUB_CATEGORY,COMPANY_STATUS, DATE_OF_REGISTRATION,REGISTERED_STATE,\REGISTRAR_OF_COMPANIES \
-    from companies where REGISTERED_STATE in ('Tamil Nadu', 'West Bengal', 'Delhi') \
-        and COMPANY_SUB_CATEGORY = 'Subsidiary of Foreign Company' ").show()
+print("#20 List of companies which are subsidiaries of foreign company and belong to Tamil Nadu, West Bengal, Delhi ")
+
+df.select('COMPANY_NAME','COMPANY_CLASS', 'COMPANY_SUB_CATEGORY','COMPANY_STATUS', 'DATE_OF_REGISTRATION','REGISTERED_STATE','REGISTRAR_OF_COMPANIES')\
+    .filter((df.REGISTERED_STATE.isin('Tamil Nadu', 'West Bengal', 'Delhi')) & (df.COMPANY_SUB_CATEGORY == 'Subsidiary of Foreign Company')).show()
+
 
 
 
