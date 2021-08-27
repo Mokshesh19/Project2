@@ -22,6 +22,12 @@ df.printSchema()
 df.createOrReplaceTempView("companies")
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
+#1
+
+query="select REGISTERED_STATE, count(COMPANY_NAME) as count from companies group by REGISTERED_STATE"
+spark.sql(query).show(30)
+
+#---------------------------------------------------------------------------------------------------------------------------------------------
 #2
 print("Q.2 Total number of companies of each status..")
 df3=spark.sql("Select COMPANY_STATUS, count(CORPORATE_IDENTIFICATION_NUMBER)\
@@ -52,6 +58,13 @@ df.groupBy("PRINCIPAL_BUSINESS_ACTIVITY_AS_PER_CIN") \
     .show(truncate=False)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
+#5
+
+df.groupBy(year("DATE_OF_REGISTRATION").alias("Year"))\
+   .agg(count("CORPORATE_IDENTIFICATION_NUMBER").alias("no_of_companies"))\
+   .orderBy("Year").show(1000)
+
+#---------------------------------------------------------------------------------------------------------------------------------------------
 #6
 print("6.Details of duplicate company names..")
 spark.sql("Select COMPANY_NAME,num from(select COMPANY_NAME,count(COMPANY_NAME) as num from companies group by COMPANY_NAME) as statistic where num >1 sort by num desc").show(truncate=False)
@@ -66,6 +79,12 @@ df.select("COMPANY_NAME", "COMPANY_STATUS", "DATE_OF_REGISTRATION","REGISTERED_S
     .show(1500)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
+#9
+
+q9="select COMPANY_NAME from companies where COMPANY_CLASS='Private' and COMPANY_STATUS='ACTV' and (REGISTERED_STATE= 'Delhi' or REGISTERED_STATE='Karnataka') and AUTHORIZED_CAP > 30000000"
+spark.sql(q9).show()
+
+#---------------------------------------------------------------------------------------------------------------------------------------------
 #10
 print("10.List all the public companies which are under liquidation or liquidated in India and belong to State-govt or Union Govt registered after 1985")
 spark.sql("Select COMPANY_NAME,COMPANY_CLASS from companies where COMPANY_STATUS in ('ULQD','LIQD') and COMPANY_CLASS like 'Public' and DATE_OF_REGISTRATION >= '1985-12-31'").show(truncate =False)
@@ -77,6 +96,12 @@ df.select('COMPANY_NAME','COMPANY_CLASS','COMPANY_STATUS', 'DATE_OF_REGISTRATION
     .filter(df.COMPANY_STATUS == 'MLIQ').show()
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
+#13
+
+q13="select COMPANY_NAME , DATE_OF_REGISTRATION from companies order By DATE_OF_REGISTRATION desc "
+spark.sql(q13).show(50)
+
+#-----------------------------------------------------------------------------------------------------------------------------------------------
 #14
 print("14.List the private(one person company) companies and email address of its owner registered in Mumbai or Delhi ROC.")
 spark.sql("Select COMPANY_NAME,COMPANY_CLASS, EMAIL_ADDR from companies where COMPANY_CLASS like 'Private(One Person Company)' and REGISTERED_STATE in ('Maharastra','Delhi')").show(truncate =False)
@@ -88,6 +113,12 @@ df.select('COMPANY_NAME', 'COMPANY_CLASS','AUTHORIZED_CAP', 'PAIDUP_CAPITAL')\
     .filter((df.COMPANY_CLASS == 'Private(One Person Company)') & (df.PAIDUP_CAPITAL > 10000000)).show()
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
+#17
+
+q17="select * from companies where COMPANY_SUB_CATEGORY='State Govt company' and (REGISTERED_STATE='Gujarat' or REGISTERED_STATE='Karnataka')"
+spark.sql(q17).show()
+
+#----------------------------------------------------------------------------------------------------------------------------------------------
 #18
 print("18.List the oil companies which are private .")
 spark.sql("Select COMPANY_NAME,COMPANY_CLASS from companies where COMPANY_NAME like '%OIL%' and COMPANY_CLASS like 'Private%'").show(truncate =False)
