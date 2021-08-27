@@ -1,7 +1,5 @@
 import pyspark
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType,StructField, StringType, IntegerType, DateType
-from pyspark.sql.types import ArrayType, DoubleType, BooleanType
 from pyspark.sql.functions import *
 
 spark = SparkSession.builder.appName('Project2').getOrCreate()
@@ -50,7 +48,7 @@ df3.select(when(df3.COMPANY_STATUS=="ACTV","Active") \
 #3
 print("3- Total number of companies in each company class --->")
 
-df.groupBy("COMPANY_CLASS").count().show()
+df.groupBy("COMPANY_CLASS").agg(count("CORPORATE_IDENTIFICATION_NUMBER")).show()
 #--------------------------------------------------------------------------------------------------------------------------
 #4
 print("#4 Number of companies in each of principal business activity ----> ")
@@ -89,14 +87,15 @@ df.select("COMPANY_NAME", "COMPANY_STATUS", "DATE_OF_REGISTRATION","REGISTERED_S
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #9
 print("9.List all the private companies which are active in Delhi or Karnataka and has authorized capital greater than 3 CR ---->")
-df.select("COMPANY_NAME","COMPANY_STATUS", "COMPANY_CLASS","DATE_OF_REGISTRATION")\
-    .filter((df.COMPANY_STATUS.isin('ULQD','LIQD')) & (df.COMPANY_CLASS == 'Public') & (df.DATE_OF_REGISTRATION > '1985-12-31')).show()
-#---------------------------------------------------------------------------------------------------------------------------------------------
-#10
-print("10.List all the public companies which are under liquidation or liquidated in India and belong to State-govt or Union Govt registered after 1985 --->")
 df.select("COMPANY_NAME","COMPANY_STATUS", "COMPANY_CLASS", "REGISTERED_STATE", "AUTHORIZED_CAP")\
     .filter((df.COMPANY_CLASS =='Private') & (df.COMPANY_STATUS=='ACTV') & (df.REGISTERED_STATE.isin('Delhi', 'Karnataka')) & (df.AUTHORIZED_CAP > 30000000))\
     .show()
+
+#---------------------------------------------------------------------------------------------------------------------------------------------
+#10
+print("10.List all the public companies which are under liquidation or liquidated in India and belong to State-govt or Union Govt registered after 1985 --->")
+df.select("COMPANY_NAME","COMPANY_STATUS", "COMPANY_CLASS","DATE_OF_REGISTRATION")\
+    .filter((df.COMPANY_STATUS.isin('ULQD','LIQD')) & (df.COMPANY_CLASS == 'Public') & (df.DATE_OF_REGISTRATION > '1985-12-31')).show()
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #11
@@ -139,14 +138,17 @@ df.select('COMPANY_NAME', 'COMPANY_CLASS','AUTHORIZED_CAP', 'PAIDUP_CAPITAL')\
 #17
 print("#17 List the state-govt companies belonging to Gujarat and Karnataka . ----> ")
 
-df.select('COMPANY_NAME', 'COMPANY_CLASS','AUTHORIZED_CAP', 'PAIDUP_CAPITAL')\
-    .filter((df.COMPANY_CLASS == 'Private(One Person Company)') & (df.PAIDUP_CAPITAL > 10000000)).show()
+df.select("COMPANY_NAME", "COMPANY_STATUS","COMPANY_SUB_CATEGORY","REGISTERED_STATE")\
+    .filter((df.COMPANY_SUB_CATEGORY=='State Govt company') & (df.REGISTERED_STATE.isin('Gujarat', 'Karnataka'))).show(500)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #18
 print("18.List the oil companies which are private .")
 
-spark.sql("Select COMPANY_NAME,COMPANY_CLASS from companies where COMPANY_NAME like '%OIL%' and COMPANY_CLASS like 'Private%'").show(truncate =False)
+df.groupBy(year("DATE_OF_REGISTRATION").alias('Year'))\
+    .agg(count(when((df.COMPANY_CLASS == 'Private') & (df.COMPANY_NAME.contains('OIL')),True)).alias("Number_of_Private_OIL_Companies"),
+         count(when((df.COMPANY_CLASS == 'Public') & (df.COMPANY_NAME.contains('OIL')),True)).alias("Number_of_Public_OIL_Companies") 
+    ).orderBy("Year").show(100)
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #19
 print("19- List all private(One person company) companies which are Dormant under section 455 --->")
