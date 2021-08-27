@@ -23,13 +23,12 @@ df.createOrReplaceTempView("companies")
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #1
-
-query="select REGISTERED_STATE, count(COMPANY_NAME) as count from companies group by REGISTERED_STATE"
-spark.sql(query).show(30)
+print("Q.1 Total number of companies of each state ---->")
+df.groupBy("REGISTERED_STATE").agg(count("CORPORATE_IDENTIFICATION_NUMBER").alias("Number_of_Companies")).show(36,truncate = False)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #2
-print("Q.2 Total number of companies of each status..")
+print("Q.2 Total number of companies of each status ---->")
 df3=spark.sql("Select COMPANY_STATUS, count(CORPORATE_IDENTIFICATION_NUMBER)\
 as Number_of_Companies from companies group by COMPANY_STATUS")
 #df3.show()
@@ -59,6 +58,7 @@ df.groupBy("PRINCIPAL_BUSINESS_ACTIVITY_AS_PER_CIN") \
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #5
+print("5.Total number of companies registered every year. ---->")
 
 df.groupBy(year("DATE_OF_REGISTRATION").alias("Year"))\
    .agg(count("CORPORATE_IDENTIFICATION_NUMBER").alias("no_of_companies"))\
@@ -66,8 +66,9 @@ df.groupBy(year("DATE_OF_REGISTRATION").alias("Year"))\
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #6
-print("6.Details of duplicate company names..")
-spark.sql("Select COMPANY_NAME,num from(select COMPANY_NAME,count(COMPANY_NAME) as num from companies group by COMPANY_NAME) as statistic where num >1 sort by num desc").show(truncate=False)
+print("6.Details of duplicate company names ---->")
+df.groupBy("COMPANY_NAME").agg(count("COMPANY_NAME").alias("Count"))\
+    .where(col("Count") > 1).show(200,truncate = False)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #8
@@ -80,14 +81,18 @@ df.select("COMPANY_NAME", "COMPANY_STATUS", "DATE_OF_REGISTRATION","REGISTERED_S
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #9
+print("#9 List all the private companies which are active in Delhi or Karnataka and has authorized capital greater than 3 CR ---> ")
 
-q9="select COMPANY_NAME from companies where COMPANY_CLASS='Private' and COMPANY_STATUS='ACTV' and (REGISTERED_STATE= 'Delhi' or REGISTERED_STATE='Karnataka') and AUTHORIZED_CAP > 30000000"
-spark.sql(q9).show()
-
+df.select("COMPANY_NAME","COMPANY_STATUS", "COMPANY_CLASS", "REGISTERED_STATE")\
+    .filter((df.COMPANY_CLASS =='Private') & (df.COMPANY_STATUS=='ACTV') & (df.REGISTERED_STATE.isin('Delhi', 'Karnataka')) & (df.AUTHORIZED_CAP > 30000000))\
+    .show()
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #10
-print("10.List all the public companies which are under liquidation or liquidated in India and belong to State-govt or Union Govt registered after 1985")
-spark.sql("Select COMPANY_NAME,COMPANY_CLASS from companies where COMPANY_STATUS in ('ULQD','LIQD') and COMPANY_CLASS like 'Public' and DATE_OF_REGISTRATION >= '1985-12-31'").show(truncate =False)
+print("10.List all the public companies which are under liquidation or liquidated in India and belong to State-govt or Union Govt registered after 1985 --->")
+
+df.select("COMPANY_NAME","COMPANY_STATUS", "COMPANY_CLASS","DATE_OF_REGISTRATION")\
+    .filter((df.COMPANY_STATUS.isin('ULQD','LIQD')) & (df.COMPANY_CLASS == 'Public') & (df.DATE_OF_REGISTRATION > '1985-12-31')).show()
+
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #12
 print("#12 List of companies which are vanished ----->")
@@ -97,14 +102,17 @@ df.select('COMPANY_NAME','COMPANY_CLASS','COMPANY_STATUS', 'DATE_OF_REGISTRATION
 
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #13
+print("#13 List 50 recently registered companies.  ----->")
 
-q13="select COMPANY_NAME , DATE_OF_REGISTRATION from companies order By DATE_OF_REGISTRATION desc "
-spark.sql(q13).show(50)
+df.select("COMPANY_NAME","COMPANY_STATUS", "DATE_OF_REGISTRATION")\
+    .orderBy(col("DATE_OF_REGISTRATION").desc()).show(50)spark.sql(q13).show(50)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------
 #14
 print("14.List the private(one person company) companies and email address of its owner registered in Mumbai or Delhi ROC.")
-spark.sql("Select COMPANY_NAME,COMPANY_CLASS, EMAIL_ADDR from companies where COMPANY_CLASS like 'Private(One Person Company)' and REGISTERED_STATE in ('Maharastra','Delhi')").show(truncate =False)
+df.select("COMPANY_NAME", "COMPANY_CLASS","REGISTERED_STATE", "EMAIL_ADDR")\
+    .filter((df.COMPANY_CLASS.contains('Private(One Person Company)')) & (df.REGISTERED_STATE.isin('Maharastra','Delhi'))).show()
+
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #16
 print("#16 List of Private(One Person Company) whose paidup capital is greater than 1 CR ----> ")
@@ -121,13 +129,26 @@ spark.sql(q17).show()
 #----------------------------------------------------------------------------------------------------------------------------------------------
 #18
 print("18.List the oil companies which are private .")
-spark.sql("Select COMPANY_NAME,COMPANY_CLASS from companies where COMPANY_NAME like '%OIL%' and COMPANY_CLASS like 'Private%'").show(truncate =False)
+
+df.groupBy(year("DATE_OF_REGISTRATION").alias('Year'))\
+    .agg(count(when((df.COMPANY_CLASS == 'Private') & (df.COMPANY_NAME.contains('OIL')),True)).alias("Number_of_Private_OIL_Companies"),
+         count(when((df.COMPANY_CLASS == 'Public') & (df.COMPANY_NAME.contains('OIL')),True)).alias("Number_of_Public_OIL_Companies") 
+    ).orderBy("Year").show(100)
+
 #---------------------------------------------------------------------------------------------------------------------------------------------
 #20
 print("#20 List of companies which are subsidiaries of foreign company and belong to Tamil Nadu, West Bengal, Delhi ")
 
 df.select('COMPANY_NAME','COMPANY_CLASS', 'COMPANY_SUB_CATEGORY','COMPANY_STATUS', 'DATE_OF_REGISTRATION','REGISTERED_STATE','REGISTRAR_OF_COMPANIES')\
     .filter((df.REGISTERED_STATE.isin('Tamil Nadu', 'West Bengal', 'Delhi')) & (df.COMPANY_SUB_CATEGORY == 'Subsidiary of Foreign Company')).show()
+
+#---------------------------------------------------------------------------------------------------------------------------------------------
+#21
+print("#20 Number of companies which are subsidiaries of foreign company registered every year ")
+
+df.groupBy(year("DATE_OF_REGISTRATION").alias("Year"))\
+    .agg(count(when(df.COMPANY_SUB_CATEGORY == "Subsidiary of Foreign Company",True).alias("Number_of_Foreign_Companies_Registered")\
+        ).orderBy("Year").show(100)
 
 
 
